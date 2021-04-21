@@ -101,13 +101,15 @@ public class ListaNotasActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                int marcacoesDeDesliza = ItemTouchHelper.LEFT;
-
-                return makeMovementFlags(0, marcacoesDeDesliza);
+                int marcacoesDeDesliza = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                int marcacoesDeArrastar = ItemTouchHelper.DOWN | ItemTouchHelper.UP | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT;
+                return makeMovementFlags(marcacoesDeArrastar, marcacoesDeDesliza);
             }
 
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                new NotaDAO().troca(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                adapter.troca(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return false;
             }
 
@@ -115,7 +117,6 @@ public class ListaNotasActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 new NotaDAO().remove(viewHolder.getAdapterPosition());
                 adapter.remove(viewHolder.getAdapterPosition());
-                adapter.notifyDataSetChanged();
             }
         });
         itemTouchHelper.attachToRecyclerView(listaNotas);
