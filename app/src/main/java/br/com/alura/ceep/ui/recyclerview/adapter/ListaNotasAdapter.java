@@ -48,6 +48,10 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
         return notas.size();
     }
 
+    public void remove(int adapterPosition) {
+        notas.remove(adapterPosition);
+    }
+
     class NotaViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView titulo;

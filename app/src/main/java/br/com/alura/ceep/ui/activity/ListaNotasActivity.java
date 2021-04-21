@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -55,7 +57,7 @@ public class ListaNotasActivity extends AppCompatActivity {
 
     private List<Nota> pegaTodasNotas() {
         NotaDAO dao = new NotaDAO();
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 20; i++) {
             dao.insere(new Nota("Teste" + (i+1), ""));
         }
         return dao.todos();
@@ -96,6 +98,27 @@ public class ListaNotasActivity extends AppCompatActivity {
     private void configuraRecyclerView(List<Nota> todasNotas) {
         RecyclerView listaNotas = findViewById(R.id.lista_notas_recyclerview);
         configuraAdapter(todasNotas, listaNotas);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int marcacoesDeDesliza = ItemTouchHelper.LEFT;
+
+                return makeMovementFlags(0, marcacoesDeDesliza);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                new NotaDAO().remove(viewHolder.getAdapterPosition());
+                adapter.remove(viewHolder.getAdapterPosition());
+                adapter.notifyDataSetChanged();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(listaNotas);
     }
 
     private void configuraAdapter(List<Nota> todasNotas, RecyclerView listaNotas) {
